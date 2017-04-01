@@ -1,0 +1,15 @@
+[
+{
+  "modid": "tooltipfilter",
+  "name": "TooltipFilter",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "https://github.com/Librazy/TooltipFilter",
+  "updateUrl": "https://github.com/Librazy/TooltipFilter",
+  "authorList": ["Librazy"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]

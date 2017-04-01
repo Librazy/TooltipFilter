@@ -1,0 +1,21 @@
+package org.librazy.tooltipfilter;
+
+import org.intellij.lang.annotations.Language;
+
+public class FilterEntry implements java.io.Serializable {
+    @Language("RegExp")
+    public String regExp;
+    public Boolean isRegBase64;
+    public Boolean isFullText;
+    public String replace;
+    public FilterMode mode;
+    public String name;
+    FilterEntry(@Language("RegExp") String regex, String replace, Boolean isRegBase64, Boolean isFullText, FilterMode mode, String name){
+        this.regExp = regex;
+        this.replace = replace;
+        this.isFullText = isFullText;
+        this.isRegBase64 = isRegBase64;
+        this.mode = mode;
+        this.name = name;
+    }
+}
