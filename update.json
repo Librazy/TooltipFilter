@@ -1,0 +1,10 @@
+{
+    "1.11.2": {
+        "0.1.0.28": "[recommended]"
+    },
+    "homepage": "https://github.com/Librazy/TooltipFilter/Releases",
+    "promos": {
+        "1.11.2-latest": "0.1.0.28",
+        "1.11.2-recommended": "0.1.0.28"
+    }
+}
