@@ -1,9 +1,7 @@
 package org.librazy.tooltipfilter;
 
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.config.ConfigCategory;
 import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.common.config.Property;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -14,10 +12,23 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.intellij.lang.annotations.Language;
+import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.TypeDescription;
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.Constructor;
+import org.yaml.snakeyaml.nodes.Tag;
+import org.yaml.snakeyaml.representer.Representer;
 
-import java.io.File;
-import java.util.*;
+import java.io.*;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.List;
 import java.util.stream.Collectors;
+
+import static org.librazy.tooltipfilter.FilterMode.*;
+import static org.librazy.tooltipfilter.Filters.*;
 
 /**
  * The type Tooltip Filter.
@@ -45,7 +56,7 @@ public class TooltipFilter {
 
     public static final String GUI = "org.librazy.tooltipfilter.GuiFactory";
 
-    public static final String updateJSON = "https://raw.githubusercontent.com/librazy/tooltipfilter/master/resources/update.json";
+    public static final String updateJSON = "https://raw.githubusercontent.com/librazy/tooltipfilter/update/update.json";
 
     public static final String dependencies = "required-after:forge@[13.20.0.2201,);";
 
@@ -54,149 +65,56 @@ public class TooltipFilter {
     public static final String[] modeNames = Arrays.stream(FilterMode.values()).map(Enum::name).toArray(String[]::new);
 
 
-    public static List<FilterEntry> filters = new LinkedList<>();
+    public static List<FilterEntry> filters = new ArrayList<>();
+
     protected static Configuration configuration;
+
     private static File configFile;
 
-    public TooltipFilter() {
+    private static File filterFile;
 
+    private static Representer representer = new Representer();
+
+    private static Constructor constructor = new Constructor();
+
+    private static DumperOptions dumperOptions = new DumperOptions();
+
+    static {
+        representer.addClassTag(FilterEntry.class, new Tag("!filter"));
+        dumperOptions.setIndent(4);
+        dumperOptions.setPrettyFlow(true);
+        constructor.addTypeDescription(new TypeDescription(FilterEntry.class, new Tag("!filter")));
     }
 
     public static void log(String msg) {
-        LogManager.getLogger(MODID).log(Level.INFO, msg);
-    }
-
-    private static void remove(List<String> tooltip, @Language("RegExp") String regExp, boolean exact, boolean allButFirst) {
-        Set<String> set = new HashSet<>();
-        ListIterator<String> rit = tooltip.listIterator();
-        while (rit.hasNext()) {
-            String s = rit.next();
-            if (s.matches(regExp)) {
-                check(exact, allButFirst, set, rit, s);
-            }
-        }
-    }
-
-    private static void removeRev(List<String> tooltip, @Language("RegExp") String regExp, boolean exact, boolean allButLast) {
-        Set<String> set = new HashSet<>();
-        ListIterator<String> rit = tooltip.listIterator(tooltip.size());
-        while (rit.hasPrevious()) {
-            String s = rit.previous();
-            if (s.matches(regExp)) {
-                check(exact, allButLast, set, rit, s);
-            }
-        }
-    }
-
-    private static void replace(List<String> tooltip, @Language("RegExp") String regExp, String replace, boolean exact, boolean allButFirst) {
-        Set<String> set = new HashSet<>();
-        ListIterator<String> rit = tooltip.listIterator();
-        while (rit.hasNext()) {
-            String s = rit.next();
-            if (s.matches(regExp)) {
-                checkReplace(regExp, replace, exact, allButFirst, set, rit, s);
-            }
-        }
-    }
-
-    private static void replaceRev(List<String> tooltip, @Language("RegExp") String regExp, String replace, boolean exact, boolean allButLast) {
-        Set<String> set = new HashSet<>();
-        ListIterator<String> rit = tooltip.listIterator(tooltip.size());
-        while (rit.hasPrevious()) {
-            String s = rit.previous();
-            if (s.matches(regExp)) {
-                checkReplace(regExp, replace, exact, allButLast, set, rit, s);
-            }
-        }
-    }
-
-    private static void combineMatch(List<String> tooltip, @Language("RegExp") String regExp) {
-        ListIterator<String> it = tooltip.listIterator();
-        boolean lastMatch = false;
-        while (it.hasNext()) {
-            String s = it.next();
-            boolean match = s.matches(regExp);
-            if (match && lastMatch) {
-                it.remove();
-            }
-            lastMatch = match;
-        }
-    }
-
-    private static void combineExact(List<String> tooltip, @Language("RegExp") String regExp) {
-        ListIterator<String> it = tooltip.listIterator();
-        String lastMatch = null;
-        while (it.hasNext()) {
-            String s = it.next();
-            boolean match = s.matches(regExp);
-            if (match && s.equals(lastMatch)) {
-                it.remove();
-            }
-            lastMatch = s;
-        }
-    }
-
-    private static void check(boolean exact, boolean allBut, Set<String> set, ListIterator<String> lit, String s) {
-        if (exact) {
-            if (allBut != set.add(s)) {
-                lit.remove();
-            }
-        } else {
-            if (allBut != set.isEmpty()) {
-                lit.remove();
-            }
-            set.add("");
-        }
-    }
-
-    private static void checkReplace(String regExp, String replace, boolean exact, boolean allBut, Set<String> set, ListIterator<String> lit, String s) {
-        if (exact) {
-            if (allBut != set.add(s)) {
-                lit.set(s.replaceAll(regExp, replace));
-            }
-        } else {
-            if (allBut != set.isEmpty()) {
-                lit.set(s.replaceAll(regExp, replace));
-            }
-            set.add("");
-        }
+        LogManager.getLogger(MODID).log(Level.INFO, "[" + MODNAME + "]" + msg);
     }
 
     public static void load() {
         configuration = new Configuration(configFile);
         configuration.load();
-        List<ConfigCategory> entryConfigs = new LinkedList<>();
-        Set<String> entryConfigNames = configuration.getCategoryNames().stream().filter(s -> s.startsWith("tooltipfilter.filters.")).collect(Collectors.toSet());
-        for (String name : entryConfigNames) {
-            entryConfigs.add(configuration.getCategory(name));
-        }
-        entryConfigs.forEach(
-                configCategory -> {
-                    if (configCategory.isEmpty()) return;
-                    @Language("RegExp") String regExp = configCategory.get("regExp").getString();
-                    boolean isRegBase64 = configCategory.get("isRegBase64").getBoolean();
-                    boolean isFullText = configCategory.get("isFullText").getBoolean();
-                    String replace = configCategory.get("replace").getString();
-                    FilterMode mode = FilterMode.valueOf(configCategory.get("mode").getString().toUpperCase());
-                    String name = configCategory.get("name").getString();
+        try {
+            Yaml conf = new Yaml(constructor);
 
-                    filters.add(new FilterEntry(regExp, replace, isRegBase64, isFullText, mode, name));
-                }
-        );
+            Object object = conf.load(new InputStreamReader(new FileInputStream(filterFile), "UTF-8"));
+            log("Read:" + object.toString());
+            filters = (ArrayList<FilterEntry>) object;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        save();
     }
 
     public static void save() {
-        filters.forEach(filterEntry -> {
-            ConfigCategory configCategory = configuration.getCategory("tooltipfilter.filters." + filterEntry.name);
-            configCategory.put("regExp", new Property("regExp", filterEntry.regExp, Property.Type.STRING));
-            configCategory.put("isRegBase64", new Property("isRegBase64", filterEntry.isRegBase64.toString(), Property.Type.BOOLEAN));
-            configCategory.put("isFullText", new Property("isFullText", filterEntry.isFullText.toString(), Property.Type.BOOLEAN));
-            configCategory.put("replace", new Property("replace", filterEntry.replace, Property.Type.STRING));
-            configCategory.put("mode", new Property("mode", filterEntry.mode.name(), Property.Type.STRING, modeNames));
-            configCategory.put("name", new Property("name", filterEntry.name, Property.Type.STRING));
-            configCategory.setShowInGui(true);
-        });
-        if (configuration.hasChanged()) configuration.save();
+        log("Starting saving");
+        try {
+            log(filters.size() + "");
+            log(filters.toString());
+            Yaml conf = new Yaml(representer, dumperOptions);
+            conf.dump(filters, new OutputStreamWriter(new FileOutputStream(filterFile), "UTF-8"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -207,6 +125,18 @@ public class TooltipFilter {
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         configFile = event.getSuggestedConfigurationFile();
+        filterFile = new File(event.getModConfigurationDirectory() + "/" + TooltipFilter.MODNAME + "/filter.txt");
+        try {
+            Files.createDirectories(filterFile.getParentFile().toPath());
+            Boolean suc = filterFile.createNewFile();
+            if (!suc) {
+                log("Found filter config");
+            } else {
+                log("Creating filter config");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**

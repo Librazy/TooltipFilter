@@ -10,12 +10,21 @@ public class FilterEntry implements java.io.Serializable {
     public String replace;
     public FilterMode mode;
     public String name;
-    FilterEntry(@Language("RegExp") String regex, String replace, Boolean isRegBase64, Boolean isFullText, FilterMode mode, String name){
+    public FilterEntry(@Language("RegExp") String regex, String replace, Boolean isRegBase64, Boolean isFullText, FilterMode mode, String name){
         this.regExp = regex;
         this.replace = replace;
         this.isFullText = isFullText;
         this.isRegBase64 = isRegBase64;
         this.mode = mode;
         this.name = name;
+    }
+
+    public FilterEntry(){
+        this.regExp = "";
+        this.replace = "";
+        this.isFullText = false;
+        this.isRegBase64 = false;
+        this.mode = FilterMode.REMOVE;
+        this.name = "";
     }
 }
