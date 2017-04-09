@@ -1,7 +1,6 @@
 package org.librazy.tooltipfilter;
 
 import org.intellij.lang.annotations.Language;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.HashSet;
 import java.util.List;
@@ -105,7 +104,7 @@ final class Filters {
         }
     }
 
-    private Filters(){
-        throw new NotImplementedException();
+    private Filters() throws Exception {
+        throw new Exception();
     }
 }
