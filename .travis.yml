@@ -12,11 +12,11 @@ before_deploy:
   - export GIT_TAG=TooltipFilter-$TRAVIS_BRANCH-v0.1.0.${TRAVIS_BUILD_NUMBER}
   - git tag $GIT_TAG -a -m "Generated tag from TravisCI for build $TRAVIS_BUILD_NUMBER"
   - git push -q --all --follow-tags  > /dev/null 2>&1
-  - if [[ "$GIT_LAST_MESSAGE" =~ ^\[recommended\] ]]; 
-    then export GHTHUB_DEPLOY_PRERELEASE=false;
-    else export GHTHUB_DEPLOY_PRERELEASE=true;
+  - if [[ "%GIT_LAST_MESSAGE:~0,13%" == "[recommended]" ]];
+    then export GITHUB_DEPLOY_PRERELEASE=false;
+    else export GITHUB_DEPLOY_PRERELEASE=true;
     fi
-  - echo $GHTHUB_DEPLOY_PRERELEASE
+  - echo $GITHUB_DEPLOY_PRERELEASE
 deploy:
   provider: releases
   api_key: ${GITHUB_KEY}
