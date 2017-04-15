@@ -17,6 +17,7 @@ before_deploy:
     else export GITHUB_DEPLOY_PRERELEASE=true;
     fi
   - echo $GITHUB_DEPLOY_PRERELEASE
+  - echo $GIT_LAST_MESSAGE
 deploy:
   provider: releases
   api_key: ${GITHUB_KEY}
