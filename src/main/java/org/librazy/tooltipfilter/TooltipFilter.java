@@ -27,7 +27,6 @@ import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.librazy.tooltipfilter.FilterMode.*;
 import static org.librazy.tooltipfilter.Filters.*;
 
 /**
