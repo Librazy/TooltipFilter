@@ -1,7 +1,7 @@
 [
 {
   "modid": "tooltipfilter",
-  "name": "TooltipFilter",
+  "name": "Tooltip Filter",
   "version": "${version}",
   "mcversion": "${mcversion}",
   "url": "https://github.com/Librazy/TooltipFilter",
