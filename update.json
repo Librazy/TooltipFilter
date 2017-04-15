@@ -1,6 +1,5 @@
 {
     "1.11.2": {
-        "0.1.0.28": "[recommended]",
         "0.1.0.29": "update build system",
         "0.1.0.49": "[recommended] fix travis build"
     },
