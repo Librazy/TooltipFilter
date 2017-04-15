@@ -184,7 +184,7 @@ task updateForgeJson {
         json['promos'][project.minecraft.version + '-latest'] = project.version
         if(fullLog.startsWith("[recommended]")){
             json['promos'][project.minecraft.version + '-recommended'] = project.version
-        }
+		}
         exec {
             executable = 'git'
             args = [ 'checkout', 'update']
