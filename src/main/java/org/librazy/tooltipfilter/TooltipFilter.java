@@ -11,7 +11,8 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
-import org.intellij.lang.annotations.Language;
+import org.intellij.lang.annotations.RegExp;
+import org.intellij.lang.annotations.RegExp;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.TypeDescription;
 import org.yaml.snakeyaml.Yaml;
@@ -156,8 +157,8 @@ public class TooltipFilter {
     public void ItemTooltipEvent(ItemTooltipEvent event) {
         List<String> tooltip = event.getToolTip();
         for (FilterEntry fi : filters) {
-            @Language("RegExp") String reg = fi.isRegBase64 ? new String(Base64.getDecoder().decode(fi.regExp)) : fi.regExp;
-            @Language("RegExp") String replace = fi.isRegBase64 ? new String(Base64.getDecoder().decode(fi.replace)) : fi.replace;
+            @RegExp String reg = fi.isRegBase64 ? new String(Base64.getDecoder().decode(fi.regExp)) : fi.regExp;
+            @RegExp String replace = fi.isRegBase64 ? new String(Base64.getDecoder().decode(fi.replace)) : fi.replace;
             if (!fi.isFullText) {
                 switch (fi.mode) {
                     case REMOVE:

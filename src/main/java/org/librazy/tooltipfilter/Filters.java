@@ -1,6 +1,6 @@
 package org.librazy.tooltipfilter;
 
-import org.intellij.lang.annotations.Language;
+import org.intellij.lang.annotations.RegExp;
 
 import java.util.HashSet;
 import java.util.List;
@@ -8,7 +8,7 @@ import java.util.ListIterator;
 import java.util.Set;
 
 final class Filters {
-    static void remove(List<String> tooltip, @Language("RegExp") String regExp, boolean exact, boolean allButFirst) {
+    static void remove(List<String> tooltip, @RegExp String regExp, boolean exact, boolean allButFirst) {
         Set<String> set = new HashSet<>();
         ListIterator<String> rit = tooltip.listIterator();
         while (rit.hasNext()) {
@@ -19,7 +19,7 @@ final class Filters {
         }
     }
 
-    static void removeRev(List<String> tooltip, @Language("RegExp") String regExp, boolean exact, boolean allButLast) {
+    static void removeRev(List<String> tooltip, @RegExp String regExp, boolean exact, boolean allButLast) {
         Set<String> set = new HashSet<>();
         ListIterator<String> rit = tooltip.listIterator(tooltip.size());
         while (rit.hasPrevious()) {
@@ -30,7 +30,7 @@ final class Filters {
         }
     }
 
-    static void replace(List<String> tooltip, @Language("RegExp") String regExp, String replace, boolean exact, boolean allButFirst) {
+    static void replace(List<String> tooltip, @RegExp String regExp, String replace, boolean exact, boolean allButFirst) {
         Set<String> set = new HashSet<>();
         ListIterator<String> rit = tooltip.listIterator();
         while (rit.hasNext()) {
@@ -41,7 +41,7 @@ final class Filters {
         }
     }
 
-    static void replaceRev(List<String> tooltip, @Language("RegExp") String regExp, String replace, boolean exact, boolean allButLast) {
+    static void replaceRev(List<String> tooltip, @RegExp String regExp, String replace, boolean exact, boolean allButLast) {
         Set<String> set = new HashSet<>();
         ListIterator<String> rit = tooltip.listIterator(tooltip.size());
         while (rit.hasPrevious()) {
@@ -52,7 +52,7 @@ final class Filters {
         }
     }
 
-    static void combineMatch(List<String> tooltip, @Language("RegExp") String regExp) {
+    static void combineMatch(List<String> tooltip, @RegExp String regExp) {
         ListIterator<String> it = tooltip.listIterator();
         boolean lastMatch = false;
         while (it.hasNext()) {
@@ -65,7 +65,7 @@ final class Filters {
         }
     }
 
-    static void combineExact(List<String> tooltip, @Language("RegExp") String regExp) {
+    static void combineExact(List<String> tooltip, @RegExp String regExp) {
         ListIterator<String> it = tooltip.listIterator();
         String lastMatch = null;
         while (it.hasNext()) {
