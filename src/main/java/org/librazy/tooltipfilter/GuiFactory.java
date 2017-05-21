@@ -5,9 +5,14 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraftforge.common.config.ConfigElement;
 import net.minecraftforge.fml.client.IModGuiFactory;
 import net.minecraftforge.fml.client.config.GuiConfig;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
+import java.util.HashSet;
 import java.util.Set;
 
+@SideOnly(Side.CLIENT)
+@SuppressWarnings("deprecation")
 public class GuiFactory implements IModGuiFactory {
 
     @Override
@@ -17,7 +22,7 @@ public class GuiFactory implements IModGuiFactory {
 
     @Override
     public boolean hasConfigGui() {
-        return false;
+        return true;
     }
 
     @Override
@@ -27,7 +32,7 @@ public class GuiFactory implements IModGuiFactory {
 
     @Override
     public Set<RuntimeOptionCategoryElement> runtimeGuiCategories() {
-        return null;
+        return new HashSet<>();
     }
 
     @Override
@@ -37,13 +42,13 @@ public class GuiFactory implements IModGuiFactory {
 
     @Override
     public GuiScreen createConfigGui(GuiScreen parent){
-        return null;
+        return new ConfigGui(parent);
     }
 
     public static class ConfigGui extends GuiConfig {
 
         public ConfigGui(GuiScreen parentScreen) {
-            super(parentScreen, new ConfigElement(TooltipFilter.configuration.getCategory("tooltipfilter.filters")).getChildElements(), TooltipFilter.MODID, false, false, GuiConfig.getAbridgedConfigPath(TooltipFilter.configuration.toString()));
+            super(parentScreen, new ConfigElement(TooltipFilter.configuration.getCategory("tooltipfilter")).getChildElements(), TooltipFilter.MODID, false, false, GuiConfig.getAbridgedConfigPath(TooltipFilter.configuration.toString()));
         }
 
     }

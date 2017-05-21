@@ -1,5 +1,10 @@
 package org.librazy.tooltipfilter;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
@@ -9,9 +14,10 @@ import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
-import org.intellij.lang.annotations.RegExp;
 import org.intellij.lang.annotations.RegExp;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.TypeDescription;
@@ -26,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static org.librazy.tooltipfilter.Filters.*;
@@ -33,6 +40,7 @@ import static org.librazy.tooltipfilter.Filters.*;
 /**
  * The type Tooltip Filter.
  */
+@SideOnly(Side.CLIENT)
 @Mod(modid = TooltipFilter.MODID, version = TooltipFilter.VERSION, name = TooltipFilter.MODNAME, clientSideOnly = true, canBeDeactivated = true, dependencies = TooltipFilter.dependencies, updateJSON = TooltipFilter.updateJSON, guiFactory = TooltipFilter.GUI)
 public class TooltipFilter {
     /**
@@ -61,23 +69,15 @@ public class TooltipFilter {
     public static final String dependencies = "required-after:forge@[13.20.0.2201,);";
 
     public static final String buildTime = "@BUILD_TIME@";
-
-    public static final String[] modeNames = Arrays.stream(FilterMode.values()).map(Enum::name).toArray(String[]::new);
-
-
     public static List<FilterEntry> filters = new ArrayList<>();
-
     protected static Configuration configuration;
-
     private static File configFile;
-
     private static File filterFile;
-
     private static Representer representer = new Representer();
-
     private static Constructor constructor = new Constructor();
-
     private static DumperOptions dumperOptions = new DumperOptions();
+    private static boolean nbtViewer = false;
+    private static int filterVersion = 0;
 
     static {
         representer.addClassTag(FilterEntry.class, new Tag("!filter"));
@@ -86,19 +86,35 @@ public class TooltipFilter {
         constructor.addTypeDescription(new TypeDescription(FilterEntry.class, new Tag("!filter")));
     }
 
+    private Cache<ItemStack, ItemStack> nbtViewed =
+            CacheBuilder.newBuilder()
+                        .concurrencyLevel(2)
+                        .maximumSize(10)
+                        .expireAfterAccess(2, TimeUnit.SECONDS)
+                        .build();
+
     public static void log(String msg) {
         LogManager.getLogger(MODID).log(Level.INFO, "[" + MODNAME + "]" + msg);
     }
 
+    @SuppressWarnings("unchecked")
     public static void load() {
         configuration = new Configuration(configFile);
         configuration.load();
+        nbtViewer = configuration.get("tooltipfilter", "enable_nbt_viewer", false, "Enable nbt printing on shift+alt").getBoolean();
+        boolean base64 = configuration.get("tooltipfilter", "force_save_base64", false, "Forcing filters to be re-saved in base64 format to avoid encoding issue").getBoolean();
+        filterVersion = configuration.get("tooltipfilter", "filter_version", 0, "Filter version").getInt();
+        if (configuration.hasChanged()) {
+            configuration.save();
+        }
         try {
             Yaml conf = new Yaml(constructor);
-
             Object object = conf.load(new InputStreamReader(new FileInputStream(filterFile), "UTF-8"));
-            log("Read:" + object.toString());
             filters = (ArrayList<FilterEntry>) object;
+            filters.forEach(FilterEntry::dump);
+            if(base64){
+                filters.forEach(FilterEntry::toBase64);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -106,7 +122,7 @@ public class TooltipFilter {
     }
 
     public static void save() {
-        log("Starting saving");
+        log("Starting saving, config version " + filterVersion);
         try {
             log(filters.size() + "");
             log(filters.toString());
@@ -155,6 +171,15 @@ public class TooltipFilter {
 
     @SubscribeEvent
     public void ItemTooltipEvent(ItemTooltipEvent event) {
+        ItemStack item = event.getItemStack();
+        if (nbtViewer && GuiScreen.isShiftKeyDown() && GuiScreen.isAltKeyDown()) {
+            if (nbtViewed.getIfPresent(item) == null && item.getTagCompound() != null) {
+                nbtViewed.put(item, item);
+                event.getEntityPlayer().sendMessage(new TextComponentString(""));
+                event.getEntityPlayer().sendMessage(new TextComponentString((item.getTagCompound().toString().replace('§', '&'))));
+                event.getEntityPlayer().sendMessage(new TextComponentString(""));
+            }
+        }
         List<String> tooltip = event.getToolTip();
         for (FilterEntry fi : filters) {
             @RegExp String reg = fi.isRegBase64 ? new String(Base64.getDecoder().decode(fi.regExp)) : fi.regExp;
@@ -238,13 +263,13 @@ public class TooltipFilter {
     }
 
     public static class ChangeListener {
-
         @SubscribeEvent
         public void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent eventArgs) {
-            if (eventArgs.getModID().equals(TooltipFilter.MODID))
+            if (eventArgs.getModID().equals(TooltipFilter.MODID)) {
+                configuration.save();
                 load();
+            }
         }
-
     }
 }
 

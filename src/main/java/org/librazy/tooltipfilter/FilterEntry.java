@@ -1,6 +1,12 @@
 package org.librazy.tooltipfilter;
 
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
 import org.intellij.lang.annotations.RegExp;
+
+import java.util.Base64;
+
+import static org.librazy.tooltipfilter.TooltipFilter.*;
 
 public class FilterEntry implements java.io.Serializable {
     @RegExp
@@ -26,5 +32,29 @@ public class FilterEntry implements java.io.Serializable {
         this.isRegBase64 = false;
         this.mode = FilterMode.REMOVE;
         this.name = "";
+    }
+
+    public void toBase64(){
+        if(!this.isRegBase64){
+            isRegBase64 = true;
+            regExp = Base64.getEncoder().encodeToString(regExp.getBytes());
+            replace = Base64.getEncoder().encodeToString(replace.getBytes());
+        }
+    }
+
+    public void dump(){
+        LogManager.getLogger(MODID).log(Level.INFO,  "====" + name + "====");
+        LogManager.getLogger(MODID).log(Level.INFO, regExp);
+        if(isRegBase64){
+            LogManager.getLogger(MODID).log(Level.INFO, "Decoded:" + new String(Base64.getDecoder().decode(regExp)));
+        }
+        LogManager.getLogger(MODID).log(Level.INFO, replace);
+        if(isRegBase64){
+            LogManager.getLogger(MODID).log(Level.INFO, "Decoded:" + new String(Base64.getDecoder().decode(replace)));
+        }
+        LogManager.getLogger(MODID).log(Level.INFO, isFullText);
+        LogManager.getLogger(MODID).log(Level.INFO, isRegBase64);
+        LogManager.getLogger(MODID).log(Level.INFO, mode);
+        LogManager.getLogger(MODID).log(Level.INFO, "==  ==  ==  ==  ==");
     }
 }
