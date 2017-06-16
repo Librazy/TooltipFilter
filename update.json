@@ -5,12 +5,14 @@
         "0.1.0.50": "configs and nbt viewer"
     },
     "1.12": {
-        "0.1.0.51": "update 1.12"
+        "0.1.0.51": "update 1.12",
+        "0.1.0.52": "[recommended] update 1.12"
     },
     "homepage": "https://github.com/Librazy/TooltipFilter/Releases",
     "promos": {
         "1.11.2-latest": "0.1.0.50",
         "1.11.2-recommended": "0.1.0.49",
-        "1.12-latest": "0.1.0.51"
+        "1.12-latest": "0.1.0.52",
+        "1.12-recommended": "0.1.0.52"
     }
 }
