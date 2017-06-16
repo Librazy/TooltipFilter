@@ -66,7 +66,7 @@ public class TooltipFilter {
 
     public static final String updateJSON = "https://raw.githubusercontent.com/librazy/tooltipfilter/update/update.json";
 
-    public static final String dependencies = "required-after:forge@[13.20.0.2201,);";
+    public static final String dependencies = "required-after:forge@[14.21.0.2331,);";
 
     public static final String buildTime = "@BUILD_TIME@";
     public static List<FilterEntry> filters = new ArrayList<>();
