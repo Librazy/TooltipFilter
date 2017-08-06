@@ -12,7 +12,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 @SideOnly(Side.CLIENT)
-@SuppressWarnings("deprecation")
 public class GuiFactory implements IModGuiFactory {
 
     @Override
@@ -26,18 +25,8 @@ public class GuiFactory implements IModGuiFactory {
     }
 
     @Override
-    public Class<? extends GuiScreen> mainConfigGuiClass() {
-        return ConfigGui.class;
-    }
-
-    @Override
     public Set<RuntimeOptionCategoryElement> runtimeGuiCategories() {
         return new HashSet<>();
-    }
-
-    @Override
-    public RuntimeOptionGuiHandler getHandlerFor(RuntimeOptionCategoryElement element) {
-        return null;
     }
 
     @Override
@@ -47,7 +36,7 @@ public class GuiFactory implements IModGuiFactory {
 
     public static class ConfigGui extends GuiConfig {
 
-        public ConfigGui(GuiScreen parentScreen) {
+        ConfigGui(GuiScreen parentScreen) {
             super(parentScreen, new ConfigElement(TooltipFilter.configuration.getCategory("tooltipfilter")).getChildElements(), TooltipFilter.MODID, false, false, GuiConfig.getAbridgedConfigPath(TooltipFilter.configuration.toString()));
         }
 

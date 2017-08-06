@@ -52,25 +52,25 @@ public class TooltipFilter {
      * </ol>
      * If incrementing the Minecraft version, also update "curseFilenameParser" in AddVersionChecker()
      */
-    public static final String VERSION = "@VERSION@";
+    static final String VERSION = "@VERSION@";
     /**
      * The constant MODID.
      */
-    public static final String MODID = "tooltipfilter";
+    static final String MODID = "tooltipfilter";
     /**
      * The constant MODNAME.
      */
-    public static final String MODNAME = "Tooltip Filter";
+    static final String MODNAME = "Tooltip Filter";
 
-    public static final String GUI = "org.librazy.tooltipfilter.GuiFactory";
+    static final String GUI = "org.librazy.tooltipfilter.GuiFactory";
 
-    public static final String updateJSON = "https://raw.githubusercontent.com/librazy/tooltipfilter/update/update.json";
+    static final String updateJSON = "https://raw.githubusercontent.com/librazy/tooltipfilter/update/update.json";
 
-    public static final String dependencies = "required-after:forge@[14.21.0.2331,);";
+    static final String dependencies = "required-after:forge@[14.22.0.2444,);";
 
-    public static final String buildTime = "@BUILD_TIME@";
-    public static List<FilterEntry> filters = new ArrayList<>();
-    protected static Configuration configuration;
+    private static final String buildTime = "@BUILD_TIME@";
+    private static List<FilterEntry> filters = new ArrayList<>();
+    static Configuration configuration;
     private static File configFile;
     private static File filterFile;
     private static Representer representer = new Representer();
@@ -93,12 +93,12 @@ public class TooltipFilter {
                         .expireAfterAccess(2, TimeUnit.SECONDS)
                         .build();
 
-    public static void log(String msg) {
+    private static void log(String msg) {
         LogManager.getLogger(MODID).log(Level.INFO, "[" + MODNAME + "]" + msg);
     }
 
     @SuppressWarnings("unchecked")
-    public static void load() {
+    private static void load() {
         configuration = new Configuration(configFile);
         configuration.load();
         nbtViewer = configuration.get("tooltipfilter", "enable_nbt_viewer", false, "Enable nbt printing on shift+alt").getBoolean();
@@ -121,7 +121,7 @@ public class TooltipFilter {
         save();
     }
 
-    public static void save() {
+    private static void save() {
         log("Starting saving, config version " + filterVersion);
         try {
             log(filters.size() + "");
