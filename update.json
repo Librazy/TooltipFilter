@@ -12,11 +12,16 @@
         "0.1.0.53": "fix travis deploy",
         "0.1.0.56": "[recommended] fix"
     },
+    "1.12.1": {
+        "0.1.0.57": "[recommended] 1.12.1"
+    },
     "homepage": "https://github.com/Librazy/TooltipFilter/Releases",
     "promos": {
         "1.11.2-latest": "0.1.0.55",
         "1.11.2-recommended": "0.1.0.55",
         "1.12-latest": "0.1.0.56",
-        "1.12-recommended": "0.1.0.56"
+        "1.12-recommended": "0.1.0.56",
+        "1.12.1-latest": "0.1.0.57",
+        "1.12.1-recommended": "0.1.0.57"
     }
 }
