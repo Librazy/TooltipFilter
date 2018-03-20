@@ -16,7 +16,8 @@
         "0.1.0.57": "[recommended] 1.12.1"
     },
     "1.12.2": {
-        "0.1.0.59": "fix compile"
+        "0.1.0.59": "fix compile",
+        "0.1.0.60": "[recommended] update 1.12.2"
     },
     "homepage": "https://github.com/Librazy/TooltipFilter/Releases",
     "promos": {
@@ -26,6 +27,7 @@
         "1.12-recommended": "0.1.0.56",
         "1.12.1-latest": "0.1.0.57",
         "1.12.1-recommended": "0.1.0.57",
-        "1.12.2-latest": "0.1.0.59"
+        "1.12.2-latest": "0.1.0.60",
+        "1.12.2-recommended": "0.1.0.60"
     }
 }
