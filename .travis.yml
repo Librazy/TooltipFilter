@@ -20,6 +20,8 @@ before_deploy:
   - echo $GIT_LAST_MESSAGE
 deploy:
   provider: releases
+  edge:
+    branch: releases-booleanize
   api_key: ${GITHUB_KEY}
   file:
   - build/libs/TooltipFilter-$TRAVIS_BRANCH-0.1.0.${TRAVIS_BUILD_NUMBER}.jar
@@ -27,7 +29,7 @@ deploy:
     tags: false
     all_branches: true
   skip_cleanup: true
-  prerelease: true
+  prerelease: $GITHUB_DEPLOY_PRERELEASE
 branches:
   except:
   - "/^TooltipFilter.*-v[0-9]/"

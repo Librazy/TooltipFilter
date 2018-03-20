@@ -26,7 +26,6 @@ import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.representer.Representer;
 
-import java.io.*;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -69,7 +68,7 @@ public class TooltipFilter {
     static final String dependencies = "required-after:forge@[14.22.0.2444,);";
 
     private static final String buildTime = "@BUILD_TIME@";
-    private static List<FilterEntry> filters = new ArrayList<>();
+    private static final List<FilterEntry> filters = new ArrayList<>();
     static Configuration configuration;
     private static File configFile;
     private static File filterFile;
@@ -110,9 +109,11 @@ public class TooltipFilter {
         try {
             Yaml conf = new Yaml(constructor);
             Object object = conf.load(new InputStreamReader(new FileInputStream(filterFile), "UTF-8"));
-            filters = (ArrayList<FilterEntry>) object;
+            if (object != null) {
+                filters.addAll((ArrayList<FilterEntry>) object);
+            }
             filters.forEach(FilterEntry::dump);
-            if(base64){
+            if (base64) {
                 filters.forEach(FilterEntry::toBase64);
             }
         } catch (Exception e) {
