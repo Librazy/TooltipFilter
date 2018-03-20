@@ -26,6 +26,7 @@ import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.representer.Representer;
 
+import java.io.*;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -65,7 +66,7 @@ public class TooltipFilter {
 
     static final String updateJSON = "https://raw.githubusercontent.com/librazy/tooltipfilter/update/update.json";
 
-    static final String dependencies = "required-after:forge@[14.22.0.2444,);";
+    static final String dependencies = "required-after:forge@[14.23.2.2631,);";
 
     private static final String buildTime = "@BUILD_TIME@";
     private static final List<FilterEntry> filters = new ArrayList<>();
